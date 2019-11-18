@@ -344,6 +344,10 @@ while [[ "$ROUTER_IP" == "" || "$ROUTER_IP" == "<pending>" ]]; do
     echo $ROUTER_IP
 done
 
+### Why is this currently failing?
+
+set +e
+
 if [ -f transaction.yaml ]; then rm transaction.yaml; fi
 gcloud dns record-sets transaction start --zone ${BASE_DOMAIN_ZONE_NAME}
 gcloud dns record-sets transaction add ${ROUTER_IP} --name \*.apps.${CLUSTER_NAME}.${BASE_DOMAIN}. --ttl 300 --type A --zone ${BASE_DOMAIN_ZONE_NAME}
@@ -353,5 +357,7 @@ if [ -f transaction.yaml ]; then rm transaction.yaml; fi
 gcloud dns record-sets transaction start --zone ${INFRA_ID}-private-zone
 gcloud dns record-sets transaction add ${ROUTER_IP} --name \*.apps.${CLUSTER_NAME}.${BASE_DOMAIN}. --ttl 300 --type A --zone ${INFRA_ID}-private-zone
 gcloud dns record-sets transaction execute --zone ${INFRA_ID}-private-zone
+
+set -e
 
 ./openshift-install --log-level=debug wait-for install-complete
