@@ -17,6 +17,7 @@ set -eu
 
 export GOOGLE_CREDENTIALS=~/.secrets/aos-serviceaccount.json
 
+./create-install-config.sh > install-config.yaml
 ./openshift-install version
 
 gcloud auth activate-service-account --key-file $GOOGLE_CREDENTIALS
