@@ -276,10 +276,10 @@ gcloud dns record-sets transaction add ${MASTER0_IP} --name etcd-0.${CLUSTER_NAM
 gcloud dns record-sets transaction add ${MASTER1_IP} --name etcd-1.${CLUSTER_NAME}.${BASE_DOMAIN}. --ttl 60 --type A --zone ${INFRA_ID}-private-zone
 gcloud dns record-sets transaction add ${MASTER2_IP} --name etcd-2.${CLUSTER_NAME}.${BASE_DOMAIN}. --ttl 60 --type A --zone ${INFRA_ID}-private-zone
 gcloud dns record-sets transaction add \
-  "0 10 2380 etcd-0.${CLUSTER_NAME}.${BASE_DOMAIN}." \
-  "0 10 2380 etcd-1.${CLUSTER_NAME}.${BASE_DOMAIN}." \
-  "0 10 2380 etcd-2.${CLUSTER_NAME}.${BASE_DOMAIN}." \
-  --name _etcd-server-ssl._tcp.${CLUSTER_NAME}.${BASE_DOMAIN}. --ttl 60 --type SRV --zone ${INFRA_ID}-private-zone
+       "0 10 2380 etcd-0.${CLUSTER_NAME}.${BASE_DOMAIN}." \
+       "0 10 2380 etcd-1.${CLUSTER_NAME}.${BASE_DOMAIN}." \
+       "0 10 2380 etcd-2.${CLUSTER_NAME}.${BASE_DOMAIN}." \
+       --name _etcd-server-ssl._tcp.${CLUSTER_NAME}.${BASE_DOMAIN}. --ttl 60 --type SRV --zone ${INFRA_ID}-private-zone
 gcloud dns record-sets transaction execute --zone ${INFRA_ID}-private-zone
 
 # The templates do not manage load balancer membership due to
@@ -334,7 +334,7 @@ gcloud deployment-manager deployments delete ${INFRA_ID}-bootstrap -q
 
 # Approve compute nodes, if not already
 for compute in {0..2}; do
-  ./approvecsr.sh ${INFRA_ID}-w-${compute}
+    ./approvecsr.sh ${INFRA_ID}-w-${compute}
 done;
 
 # Add wildcard dns record for *.apps
@@ -345,7 +345,7 @@ while [[ "$ROUTER_IP" == "" || "$ROUTER_IP" == "<pending>" ]]; do
     echo $ROUTER_IP
 done
 
-### Why is this currently failing?
+### Why has this just started to fail? (Mon 18 Nov 17:40:31 GMT 2019)
 
 set +e
 
