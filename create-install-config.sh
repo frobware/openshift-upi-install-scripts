@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 function create_gcp_config {
-    AUTHS_JSON="$(jq '.auths' $HOME/.secrets/pull-secret.json)"
+    local cluster_name=$1
+    AUTHS_JSON=$(<$HOME/.secrets/pull-secret.json)
     SSH_KEY=$(<$HOME/.ssh/id_rsa.pub)  
     cat <<EOF
 apiVersion: v1
@@ -18,7 +19,7 @@ controlPlane:
   replicas: 3
 metadata:
   creationTimestamp: null
-  name: amcdermo
+  name: $cluster_name
 networking:
   clusterNetwork:
   - cidr: 10.128.0.0/14
@@ -32,10 +33,15 @@ platform:
     projectID: openshift-gce-devel
     region: us-east1
 publish: External
-pullSecret: '{"auths": ${AUTHS_JSON}}'
+pullSecret: '${AUTHS_JSON}'
 sshKey: |
-  '${SSH_KEY}'
+  ${SSH_KEY}
 EOF
 }
 
-create_gcp_config
+if [ $# -eq 0 ]; then
+    echo "usage: <cluster-name>"
+    exit
+fi
+   
+create_gcp_config "$1"
