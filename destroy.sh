@@ -12,7 +12,7 @@ export INFRA_ID=`jq -r .infraID metadata.json`
 if [ -z $INFRA_ID ]; then exit 2; fi
 
 # Use openshift-install to delete the cluster.
-openshift-install destroy cluster
+./openshift-install destroy cluster
 
 # Delete the deployments
 gcloud -q deployment-manager deployments delete \
