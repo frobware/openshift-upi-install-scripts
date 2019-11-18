@@ -8,6 +8,11 @@ if [ ! -x ./openshift-install ]; then
     exit 1
 fi
 
+if [ ! -f installer/upi/gcp/01_vpc.py ]; then
+    echo "Did you run: git submodule update --init"
+    exit 1
+fi
+
 set -eu
 
 export GOOGLE_CREDENTIALS=~/.secrets/aos-serviceaccount.json
