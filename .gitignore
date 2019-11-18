@@ -7,3 +7,4 @@
 04_bootstrap.py
 05_control_plane.py
 06_worker.py
+openshift-install
