@@ -8,3 +8,8 @@
 05_control_plane.py
 06_worker.py
 openshift-install
+service-account-key.json
+.openshift_install.log
+.openshift_install_state.json
+auth/
+metadata.json
