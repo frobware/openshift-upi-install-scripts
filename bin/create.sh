@@ -40,9 +40,17 @@ gcloud auth activate-service-account --key-file $GOOGLE_CREDENTIALS
 ./openshift-install create manifests
 
 # Remove control plane machines
+#
+# Remove the control plane machines from the manifests. We'll be
+# providing those ourselves and don't want to involve the machine-API
+# operator.
 rm -f openshift/99_openshift-cluster-api_master-machines-*.yaml
 
-# rm -f openshift/99_openshift-cluster-api_master-machineset-*.yaml
+# Remove compute machinesets (Optional)
+#
+# If you do not want the cluster to provision compute machines, remove
+# the compute machinesets from the manifests as well.
+# rm -f openshift/99_openshift-cluster-api_worker-machineset-*.yaml
 
 # Make control-plane nodes unschedulable
 python -c '
