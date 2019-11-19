@@ -26,12 +26,7 @@ export GOOGLE_CREDENTIALS=~/.secrets/aos-serviceaccount.json
 gcloud auth activate-service-account --key-file $GOOGLE_CREDENTIALS
 
 # Create an install configuration as per the usual approach.
-
-### Automated, hands-off
-$topdir/bin/create-install-config.sh "${HATTER_NAME}-$(date +%m%d-%H%M)" us-east1 > install-config.yaml
-
-### Not-automated, hands-on
-#./openshift-install create install-config
+./openshift-install create install-config
 
 # Empty the compute pool (optional)
 # python3 -c '
