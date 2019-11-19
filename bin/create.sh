@@ -5,7 +5,7 @@
 topdir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd -P)"/..
 
 : ${OPENSHIFT_INSTALLER_DIR:=$topdir/installer}
-: ${HATTER_NAME:=amcdermo}
+: ${HATTER_NAME:?}
 
 if [ ! -x ./openshift-install ]; then
     echo "Need local openshift-install binary"
@@ -21,13 +21,17 @@ set -eu
 
 export GOOGLE_CREDENTIALS=~/.secrets/aos-serviceaccount.json
 
-#$topdir/create-install-config.sh "${HATTER_NAME}-$(date +%m%d-%H%M)" > install-config.yaml
 ./openshift-install version
 
 gcloud auth activate-service-account --key-file $GOOGLE_CREDENTIALS
 
 # Create an install configuration as per the usual approach.
-./openshift-install create install-config
+
+### Automated, hands-off
+$topdir/bin/create-install-config.sh "${HATTER_NAME}-$(date +%m%d-%H%M)" us-east1 > install-config.yaml
+
+### Not-automated, hands-on
+#./openshift-install create install-config
 
 # Empty the compute pool (optional)
 # python3 -c '
