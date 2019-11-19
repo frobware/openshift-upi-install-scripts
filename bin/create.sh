@@ -60,6 +60,21 @@ data = yaml.load(open(path));
 data["spec"]["mastersSchedulable"] = False;
 open(path, "w").write(yaml.dump(data, default_flow_style=False))'
 
+# Remove DNS Zones (Optional)
+#
+# If you don't want the ingress operator to create DNS records on your
+# behalf, remove the privateZone and publicZone sections from the DNS
+# configuration. If you do so, you'll need to add ingress DNS records
+# manually later on.
+#
+# python -c '
+# import yaml;
+# path = "manifests/cluster-dns-02-config.yml";
+# data = yaml.full_load(open(path));
+# del data["spec"]["publicZone"];
+# del data["spec"]["privateZone"];
+# open(path, "w").write(yaml.dump(data, default_flow_style=False))'
+
 # Create Ignition configs
 ./openshift-install create ignition-configs
 
