@@ -2,6 +2,7 @@
 
 function create_gcp_config {
     local cluster_name=$1
+    local region=$2
     AUTHS_JSON=$(<$HOME/.secrets/pull-secret.json)
     SSH_KEY=$(<$HOME/.ssh/id_rsa.pub)  
     cat <<EOF
@@ -31,7 +32,7 @@ networking:
 platform:
   gcp:
     projectID: openshift-gce-devel
-    region: us-east1
+    region: $region
 publish: External
 pullSecret: '${AUTHS_JSON}'
 sshKey: |
@@ -39,9 +40,9 @@ sshKey: |
 EOF
 }
 
-if [ $# -eq 0 ]; then
-    echo "usage: <cluster-name>"
+if [ $# -ne 2 ]; then
+    echo "usage: $(basename $0) <cluster-name> <region>"
     exit
 fi
    
-create_gcp_config "$1"
+create_gcp_config "$1" "$2"
