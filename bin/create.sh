@@ -1,14 +1,18 @@
 #!/bin/bash
 
+# https://github.com/openshift/installer/blob/master/docs/user/gcp/install_upi.md
+
+topdir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd -P)"/..
+
+: ${OPENSHIFT_INSTALLER_DIR:=$topdir/installer}
 : ${HATTER_NAME:=amcdermo}
-: ${OPENSHIFT_INSTALLER_DIR:=installer}
 
 if [ ! -x ./openshift-install ]; then
     echo "Need local openshift-install binary"
     exit 1
 fi
 
-if [ ! -f installer/upi/gcp/01_vpc.py ]; then
+if [ ! -f $topdir/installer/upi/gcp/01_vpc.py ]; then
     echo "Did you run: git submodule update --init"
     exit 1
 fi
@@ -17,7 +21,7 @@ set -eu
 
 export GOOGLE_CREDENTIALS=~/.secrets/aos-serviceaccount.json
 
-#./create-install-config.sh "${HATTER_NAME}-$(date +%m%d-%H%M)" > install-config.yaml
+#$topdir/create-install-config.sh "${HATTER_NAME}-$(date +%m%d-%H%M)" > install-config.yaml
 ./openshift-install version
 
 gcloud auth activate-service-account --key-file $GOOGLE_CREDENTIALS
@@ -26,19 +30,20 @@ gcloud auth activate-service-account --key-file $GOOGLE_CREDENTIALS
 ./openshift-install create install-config
 
 # Empty the compute pool (optional)
-python3 -c '
-import yaml;
-path = "install-config.yaml";
-data = yaml.full_load(open(path));
-data["compute"][0]["replicas"] = 0;
-open(path, "w").write(yaml.dump(data, default_flow_style=False))'
+# python3 -c '
+# import yaml;
+# path = "install-config.yaml";
+# data = yaml.full_load(open(path));
+# data["compute"][0]["replicas"] = 1;
+# open(path, "w").write(yaml.dump(data, default_flow_style=False))'
 
 # Create manifest to enable customizations which are not exposed via the install configuration.
 ./openshift-install create manifests
 
 # Remove control plane machines
-#rm -f openshift/99_openshift-cluster-api_master-machines-*.yaml
-#rm -f openshift/99_openshift-cluster-api_master-machineset-*.yaml
+rm -f openshift/99_openshift-cluster-api_master-machines-*.yaml
+
+# rm -f openshift/99_openshift-cluster-api_master-machineset-*.yaml
 
 # Make control-plane nodes unschedulable
 python -c '
@@ -334,7 +339,7 @@ gcloud deployment-manager deployments delete ${INFRA_ID}-bootstrap -q
 
 # Approve compute nodes, if not already
 for compute in {0..2}; do
-    ./approvecsr.sh ${INFRA_ID}-w-${compute}
+    $topdir/bin/approvecsr.sh ${INFRA_ID}-w-${compute}
 done;
 
 # Add wildcard dns record for *.apps
