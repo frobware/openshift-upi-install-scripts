@@ -11,13 +11,10 @@ if [ -z $INFRA_ID ]; then exit 2; fi
 ./openshift-install destroy cluster
 
 # Delete the deployments
-gcloud -q deployment-manager deployments delete \
-       ${INFRA_ID}-worker \
-       ${INFRA_ID}-control-plane \
-       ${INFRA_ID}-bootstrap \
-       ${INFRA_ID}-security \
-       ${INFRA_ID}-infra \
-       ${INFRA_ID}-vpc
+for i in worker control-plane bootstrap security infra vpc
+do
+    gcloud -q deployment-manager deployments delete ${INFRA_ID}-$i
+done
 
 rm -f .openshift_install.log
 rm -f *.yaml
