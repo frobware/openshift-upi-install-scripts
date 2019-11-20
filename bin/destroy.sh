@@ -12,6 +12,7 @@ if [ -z $INFRA_ID ]; then exit 2; fi
 
 # Delete the deployments
 gcloud -q deployment-manager deployments delete \
+       ${INFRA_ID}-worker \
        ${INFRA_ID}-control-plane \
        ${INFRA_ID}-bootstrap \
        ${INFRA_ID}-security \

@@ -340,14 +340,18 @@ for compute in {0..2}; do
     infra_id: '${INFRA_ID}'
     region: '${REGION}'
     zone: '${ZONES[(( $compute % ${#ZONES[@]} ))]}'
+
     compute_subnet: '${COMPUTE_SUBNET}'
     image: '${CLUSTER_IMAGE}'
     machine_type: 'n1-standard-4'
     root_volume_size: '128'
     service_account_email: '${WORKER_SERVICE_ACCOUNT_EMAIL}'
+
     ignition: '${WORKER_IGNITION}'
 EOF
 done
+
+gcloud deployment-manager deployments create ${INFRA_ID}-worker --config 06_worker.yaml
 
 # Monitor for bootstrap-complete
 ./openshift-install --log-level=debug wait-for bootstrap-complete
@@ -368,7 +372,7 @@ done;
 export ROUTER_IP=''
 while [[ "$ROUTER_IP" == "" || "$ROUTER_IP" == "<pending>" ]]; do
     export ROUTER_IP=`oc -n openshift-ingress get service router-default --no-headers | awk '{print $4}'`
-    sleep 1;
+    sleep 10;
     echo $ROUTER_IP
 done
 
